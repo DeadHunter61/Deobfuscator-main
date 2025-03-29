@@ -81,6 +81,23 @@ public class DeobfuscationProcessor extends Thread {
         }
     }
 
+    /**
+     * Check if a class should be skipped from deobfuscation
+     */
+    private boolean shouldSkipClass(ClassWrapper classWrapper) {
+        String className = classWrapper.getName();
+
+        // Skip $Pair classes as they cause the deobfuscator to get stuck
+        if (className.contains("$Pair")) {
+            Run.log(className + " | Skipping $Pair class to avoid processing issues");
+            return true;
+        }
+
+        // Add any other classes that should be skipped here
+
+        return false;
+    }
+
     @SneakyThrows
     @Override
     public void run() {
@@ -92,6 +109,11 @@ public class DeobfuscationProcessor extends Thread {
 
         // Process each class for deobfuscation
         for (ClassWrapper classWrapper : CLASSES.values()) {
+            // Skip problematic classes
+            if (shouldSkipClass(classWrapper)) {
+                continue;
+            }
+
             Run.log(classWrapper.getName() + " | Processing class...");
 
             // First apply specific obfuscator transformers (they'll detect if applicable)
