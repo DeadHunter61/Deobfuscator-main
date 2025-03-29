@@ -108,7 +108,48 @@ public class DeobfuscationProcessor extends Thread {
 
     private void saveOutput(@NonNull Path path) {
         try (ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(path.path()))) {
-            zipFile.setComment("deobf by ");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
 
             CLASSES.forEach(
                 (name, wrapper) -> {
