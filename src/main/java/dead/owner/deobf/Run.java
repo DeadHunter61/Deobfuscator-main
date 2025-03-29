@@ -8,7 +8,7 @@ import java.util.Scanner;
  */
 public class Run {
     public static void log(String message) {
-        System.out.println("[DeObfuscator] " + message);
+        System.out.println("[SimpleDeobfuscator] " + message);
     }
     
     public static void main(String[] args) {

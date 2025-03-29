@@ -1,7 +1,10 @@
 package dead.owner.deobf;
 
 import dead.owner.deobf.transformers.*;
+import dead.owner.deobf.transformers.colonial.ColonialDeobfuscator;
+import dead.owner.deobf.transformers.skid.SkidFuscatorDeobfuscator;
 import dead.owner.deobf.utils.wrapper.ClassWrapper;
+import dead.owner.deobf.utils.BytecodeUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +28,40 @@ public class DeobfuscationProcessor extends Thread {
     private final Map<String, ClassWrapper> CLASSES = new ConcurrentHashMap<>();
     private final Map<String, byte[]> FILES = new ConcurrentHashMap<>();
     private final @NonNull File file;
-    
+
     public final ReentrantLock flagLock = new ReentrantLock();
     private Boolean flag = null;
-    
+
     @Getter
-    private final Transformer[] transformers = new Transformer[] {
-        new StringDecryptor(),
-        new FlowCleaner(),
-        new InvokeDynamicRestorer(),
-        new MethodHandleCleaner(),
-        new ConstructorCleaner(),
-        new SignatureCleaner()
+    private final Transformer[] generalTransformers = new Transformer[] {
+            // First pass - clean up complex obfuscation techniques
+            new XufptsyuqCleaner(),
+            new EnhancedStringDecryptor(),
+            new TryCatchSimplifier(),
+
+            // Second pass - clean up specific code patterns
+            new FlowCleaner(),
+            new InvokeDynamicRestorer(),
+            new MethodHandleCleaner(),
+            new UselessCodeRemover(),
+
+            // Third pass - general cleanup
+            new ConstructorCleaner(),
+            new StaticInitializerCleaner(),
+            new CommandSystemCleaner(),
+            new SignatureCleaner(),
+
+            // Final pass - make the code more readable
+            new VariableRenamer()
+    };
+
+    // New specific obfuscator transformers
+    private final Transformer[] specificTransformers = new Transformer[] {
+            // SkidFuscator deobfuscator (applies all SkidFuscator-specific transformers)
+            new SkidFuscatorDeobfuscator(),
+
+            // Colonial Obfuscator deobfuscator (applies all Colonial-specific transformers)
+            new ColonialDeobfuscator()
     };
 
     public Boolean getFlag() {
@@ -68,36 +93,41 @@ public class DeobfuscationProcessor extends Thread {
         // Process each class for deobfuscation
         for (ClassWrapper classWrapper : CLASSES.values()) {
             Run.log(classWrapper.getName() + " | Processing class...");
-            
-            // Apply each transformer
-            for (Transformer transformer : transformers) {
+
+            // First apply specific obfuscator transformers (they'll detect if applicable)
+            for (Transformer transformer : specificTransformers) {
+                transformer.transform(classWrapper);
+            }
+
+            // Then apply general transformers
+            for (Transformer transformer : generalTransformers) {
                 Run.log(classWrapper.getName() + " | Applying " + transformer.getClass().getSimpleName() + "...");
                 transformer.transform(classWrapper);
             }
-            
+
             Run.log(classWrapper.getName() + " | Deobfuscation complete!");
             Run.log("");
         }
-        
+
         setFlag(true);
     }
-    
+
     private boolean loadInput(@NonNull Path path) {
         try (ZipFile zipFile = new ZipFile(path.path())) {
             zipFile.entries().asIterator().forEachRemaining(
-                zipEntry -> {
-                    try {
-                        var is = zipFile.getInputStream(zipEntry);
-                        var name = zipEntry.getName();
-                        var buffer = is.readAllBytes();
-                        if (isClassFile(name, buffer)) {
-                            var wrapper = new ClassWrapper(buffer);
-                            CLASSES.put(wrapper.getName(), wrapper);
-                        } else FILES.put(name, buffer);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    zipEntry -> {
+                        try {
+                            var is = zipFile.getInputStream(zipEntry);
+                            var name = zipEntry.getName();
+                            var buffer = is.readAllBytes();
+                            if (isClassFile(name, buffer)) {
+                                var wrapper = new ClassWrapper(buffer);
+                                CLASSES.put(wrapper.getName(), wrapper);
+                            } else FILES.put(name, buffer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
             );
             return true;
         } catch (Exception e) {
@@ -108,74 +138,33 @@ public class DeobfuscationProcessor extends Thread {
 
     private void saveOutput(@NonNull Path path) {
         try (ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(path.path()))) {
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
-            zipFile.setComment("deobf by https://github.com/DeadHunter61/Deobfuscator-main");
+            zipFile.setComment("Deobfuscated by Dead Owner Deobfuscator");
 
             CLASSES.forEach(
-                (name, wrapper) -> {
-                    try {
-                        zipFile.putNextEntry(new ZipEntry(name + ".class"));
-                        zipFile.write(wrapper.write());
-                        zipFile.closeEntry();
-                    } catch (Throwable throwable) {
-                        throwable.printStackTrace();
+                    (name, wrapper) -> {
+                        try {
+                            zipFile.putNextEntry(new ZipEntry(name + ".class"));
+                            zipFile.write(wrapper.write());
+                            zipFile.closeEntry();
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
                     }
-                }
             );
 
             FILES.forEach(
-                (name, buffer) -> {
-                    if (name.endsWith("/"))
-                        return;
+                    (name, buffer) -> {
+                        if (name.endsWith("/"))
+                            return;
 
-                    try {
-                        zipFile.putNextEntry(new ZipEntry(name));
-                        zipFile.write(buffer);
-                        zipFile.closeEntry();
-                    } catch (Throwable throwable) {
-                        throwable.printStackTrace();
+                        try {
+                            zipFile.putNextEntry(new ZipEntry(name));
+                            zipFile.write(buffer);
+                            zipFile.closeEntry();
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
                     }
-                }
             );
         } catch (IOException e) {
             e.printStackTrace();
@@ -185,9 +174,9 @@ public class DeobfuscationProcessor extends Thread {
     @SneakyThrows
     boolean isClassFile(@NonNull String entryName, byte @NonNull [] buffer) {
         return (
-            (entryName.endsWith(".class") || entryName.endsWith(".class/")) && 
-            buffer.length >= 4 && 
-            String.format("%02X%02X%02X%02X", buffer[0], buffer[1], buffer[2], buffer[3]).equalsIgnoreCase("cafebabe")
+                (entryName.endsWith(".class") || entryName.endsWith(".class/")) &&
+                        buffer.length >= 4 &&
+                        String.format("%02X%02X%02X%02X", buffer[0], buffer[1], buffer[2], buffer[3]).equalsIgnoreCase("cafebabe")
         );
     }
 
